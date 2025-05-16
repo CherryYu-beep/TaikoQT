@@ -1,37 +1,28 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(TaikoQT VERSION 0.1 LANGUAGES CXX)
+project(TaikoGame LANGUAGES CXX)
 
-set(CMAKE_AUTOMOC ON)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.2 COMPONENTS Quick REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Quick)
 
-qt_add_executable(appTaikoQT
+qt_standard_project_setup()
+
+qt_add_executable(TaikoGame
     main.cpp
 )
 
-qt_add_qml_module(appTaikoQT
-    URI TaikoQT
-    VERSION 1.0
-    QML_FILES main.qml 
+# Добавляем QML файлы как ресурсы
+qt_add_resources(TaikoGame "qml"
+    PREFIX "/"
+    FILES
+        main.qml
+        TaikoDrum.qml
+        GameArea.qml
+        drum.png
+        hit_effect.png
+        background.jpg
 )
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
-set_target_properties(appTaikoQT PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appTaikoQT
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
-)
-
-target_link_libraries(appTaikoQT
-    PRIVATE Qt6::Quick)
-
-include(GNUInstallDirs)
-install(TARGETS appTaikoQT
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+target_link_libraries(TaikoGame PRIVATE Qt6::Quick)
