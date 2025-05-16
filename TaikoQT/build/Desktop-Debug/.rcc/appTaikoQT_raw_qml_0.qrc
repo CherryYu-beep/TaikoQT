@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/TaikoQT/">
+    <file alias="main.qml">C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/main.qml</file>
+  </qresource>
+</RCC>
+

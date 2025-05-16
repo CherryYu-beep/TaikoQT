@@ -1,0 +1,4 @@
+module TaikoQT
+typeinfo appTaikoQT.qmltypes
+prefer :/TaikoQT/
+

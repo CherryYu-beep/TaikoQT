@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="/TaikoGame/">
+    <file alias="qml/main.qml">C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/qml/main.qml</file>
+    <file alias="qml/TaikoDrum.qml">C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/qml/TaikoDrum.qml</file>
+    <file alias="qml/GameArea.qml">C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/qml/GameArea.qml</file>
+    <file alias="qml/assets/drum.png">C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/qml/assets/drum.png</file>
+    <file alias="qml/assets/hit_effect.png">C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/qml/assets/hit_effect.png</file>
+    <file alias="qml/assets/background.jpg">C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/qml/assets/background.jpg</file>
+  </qresource>
+</RCC>
+

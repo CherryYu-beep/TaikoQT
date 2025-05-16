@@ -1,0 +1,14 @@
+-rootPath
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT
+-cmake-output
+-output-file
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/.qt_plugins/Qt6_QmlPlugins_Imports_appTaikoQT.cmake
+-importPath
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/TaikoQT
+-importPath
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug
+-importPath
+C:/Qt/6.6.1/msvc2019_64/./qml
+-qrcFiles
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/.rcc/qmake_TaikoQT.qrc
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/.rcc/appTaikoQT_raw_qml_0.qrc

@@ -1,0 +1,6 @@
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/CMakeFiles/TaikoGame.dir
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/CMakeFiles/TaikoGame_qmlimportscan.dir
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/CMakeFiles/edit_cache.dir
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/CMakeFiles/TaikoGame_autogen_timestamp_deps.dir
+C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/CMakeFiles/TaikoGame_autogen.dir

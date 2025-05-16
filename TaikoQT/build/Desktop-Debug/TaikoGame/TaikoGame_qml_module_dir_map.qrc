@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/TaikoGame">C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug/TaikoGame</file>
+
+  </qresource>
+</RCC>

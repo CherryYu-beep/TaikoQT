@@ -1,0 +1,87 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "TaikoGame",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "TaikoGame::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-TaikoGame-Debug-70c112ca3f1c2fbbf51a.json",
+					"name" : "TaikoGame",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "TaikoGame_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-TaikoGame_autogen-Debug-167c40e53731ed2d18cf.json",
+					"name" : "TaikoGame_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "TaikoGame_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-TaikoGame_autogen_timestamp_deps-Debug-f83ff9408a69417e127c.json",
+					"name" : "TaikoGame_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "TaikoGame_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-TaikoGame_qmlimportscan-Debug-10b9b9bb6c7f07e80511.json",
+					"name" : "TaikoGame_qmlimportscan",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT/build/Desktop-Debug",
+		"source" : "C:/Users/user/Documents/GitHub/TaikoQT/TaikoQT"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 8
+	}
+}

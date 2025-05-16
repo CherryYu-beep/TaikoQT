@@ -1,0 +1,6 @@
+module TaikoGame
+typeinfo TaikoGame.qmltypes
+prefer :/TaikoGame/
+TaikoDrum 1.0 qml/TaikoDrum.qml
+GameArea 1.0 qml/GameArea.qml
+
