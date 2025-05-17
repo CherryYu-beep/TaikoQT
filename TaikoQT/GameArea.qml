@@ -3,6 +3,9 @@ import QtQuick.Controls
 
 Item {
     id: gameArea
+    width: 800
+    height: 600
+    focus: true
 
     Image {
         anchors.fill: parent
@@ -11,89 +14,244 @@ Item {
     }
 
     property int score: 0
-    property var notes: [] // Массив для хранения нот
+    property var activeNotes: []
+    property int combo: 0
+    property int maxCombo: 0
+    property real noteSpeed: 0.3
+    property int spawnInterval: 1000
+    property int hitWindow: 150
+    property var drumKeys: ({})
 
+    // Линия ударов (теперь слева)
+    Rectangle {
+        id: hitLine
+        width: 100
+        height: 100
+        radius: 50
+        color: "#333"
+        border.color: "white"
+        border.width: 3
+        x: parent.width * 0.2 - width/2  // Перемещено влево
+        y: parent.height/2 - height/2
+    }
+
+    // UI элементы
     Text {
+        id: scoreText
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        text: "Score: " + gameArea.score
+        text: "Score: " + score
         font.pixelSize: 36
         color: "white"
-        style: Text.Outline
-        styleColor: "black"
+        style: Text.Outline; styleColor: "black"
     }
 
-    TaikoDrum {
-        id: drumLeft
-        x: parent.width / 3 - width / 2
-        y: parent.height / 2 - height / 2
-        keyToPress: Qt.Key_D
-        onHit: {
-            gameArea.score += 100;
-            checkHit(0); // Проверяем попадание по нотам для левого барабана
+    Text {
+        id: comboText
+        anchors.top: scoreText.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        text: "Combo: " + combo + " (Max: " + maxCombo + ")"
+        font.pixelSize: 24
+        color: "white"
+        style: Text.Outline; styleColor: "black"
+    }
+
+    // Барабаны (визуальные)
+    Row {
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 50
+
+        // Красный барабан (Don) - F/J
+        Rectangle {
+            width: 120
+            height: 120
+            radius: 60
+            color: drumKeys[Qt.Key_F] || drumKeys[Qt.Key_J] ? "#ff5555" : "#ff3333"
+            border.color: "white"
+            border.width: 3
+
+            Text {
+                anchors.centerIn: parent
+                text: "F/J"
+                font.pixelSize: 24
+                color: "white"
+            }
+        }
+
+        // Синий барабан (Kat) - D/K
+        Rectangle {
+            width: 120
+            height: 120
+            radius: 60
+            color: drumKeys[Qt.Key_D] || drumKeys[Qt.Key_K] ? "#5555ff" : "#3333ff"
+            border.color: "white"
+            border.width: 3
+
+            Text {
+                anchors.centerIn: parent
+                text: "D/K"
+                font.pixelSize: 24
+                color: "white"
+            }
         }
     }
 
-    TaikoDrum {
-        id: drumRight
-        x: parent.width * 2 / 3 - width / 2
-        y: parent.height / 2 - height / 2
-        keyToPress: Qt.Key_K
-        onHit: {
-            gameArea.score += 100;
-            checkHit(1); // Проверяем попадание по нотам для правого барабана
-        }
+    // Обработка клавиатуры
+    Keys.onPressed: {
+        drumKeys[event.key] = true;
+        handleKeyPress(event.key);
     }
 
-    // Функция создания ноты
-    function spawnNote(drumIndex) {
+    Keys.onReleased: {
+        drumKeys[event.key] = false;
+    }
+
+    // Генератор нот
+    Timer {
+        id: noteGenerator
+        interval: spawnInterval
+        running: true
+        repeat: true
+        onTriggered: spawnNote(Math.floor(Math.random() * 2))
+    }
+
+    // Функция создания ноты (переработана для движения справа налево)
+    function spawnNote(drumType) {
         var note = Qt.createQmlObject(`
             import QtQuick 2.0
             Rectangle {
-                property int targetDrum: ${drumIndex}
+                property int type: ${drumType}
+                property real progress: 0
                 width: 60
-                height: 30
-                color: targetDrum === 0 ? "red" : "blue"
-                radius: height/2
-                x: targetDrum === 0 ? drumLeft.x + drumLeft.width/2 - width/2
-                                   : drumRight.x + drumRight.width/2 - width/2
-                y: 0
-                Behavior on y {
-                    NumberAnimation { duration: 2000 }
+                height: 60
+                radius: 30
+                color: type === 0 ? "#ff3333" : "#3333ff"
+                x: gameArea.width  // Начинаем справа
+                y: hitLine.y + hitLine.height/2 - height/2
+
+                Timer {
+                    id: moveTimer
+                    interval: 16
+                    running: true
+                    repeat: true
+                    onTriggered: {
+                        parent.x -= noteSpeed * 15; // Движемся влево
+                        parent.progress = parent.x / gameArea.width;
+                        if (parent.x + parent.width < 0) {
+                            parent.destroy();
+                        }
+                    }
+                }
+            }
+        `, gameArea, "Note");
+
+        note.progressChanged.connect(function() {
+            if (note.x + note.width < 0) {
+                note.destroy();
+                removeNote(note);
+                combo = 0;
+            }
+        });
+
+        activeNotes.push(note);
+    }
+
+    // Обработка нажатия клавиш
+    function handleKeyPress(key) {
+        var drumType = -1;
+
+        if (key === Qt.Key_F || key === Qt.Key_J) {
+            drumType = 0; // Don (красный)
+        }
+        else if (key === Qt.Key_D || key === Qt.Key_K) {
+            drumType = 1; // Kat (синий)
+        }
+
+        if (drumType !== -1) {
+            checkNoteHit(drumType);
+        }
+    }
+
+    // Проверка попадания по ноте (адаптировано для левой позиции)
+    function checkNoteHit(drumType) {
+        var bestNote = null;
+        var bestDiff = hitWindow;
+
+        for (var i = 0; i < activeNotes.length; i++) {
+            var note = activeNotes[i];
+            if (note.type !== drumType) continue;
+
+            // Позиция центра ноты и центра hitLine
+            var noteCenter = note.x + note.width/2;
+            var hitCenter = hitLine.x + hitLine.width/2;
+            var diff = Math.abs(noteCenter - hitCenter);
+
+            if (diff < bestDiff) {
+                bestDiff = diff;
+                bestNote = note;
+            }
+        }
+
+        if (bestNote) {
+            var accuracy = "";
+            var scoreAdd = 0;
+
+            if (bestDiff < 30) {
+                scoreAdd = 300;
+                accuracy = "PERFECT!";
+            } else if (bestDiff < 60) {
+                scoreAdd = 200;
+                accuracy = "GOOD!";
+            } else {
+                scoreAdd = 100;
+                accuracy = "OK!";
+            }
+
+            score += scoreAdd;
+            combo++;
+            if (combo > maxCombo) maxCombo = combo;
+
+            createHitEffect(accuracy, drumType);
+            bestNote.destroy();
+            removeNote(bestNote);
+        } else {
+            combo = 0;
+        }
+    }
+
+    // Создание эффекта попадания (адаптировано для левой позиции)
+    function createHitEffect(text, drumType) {
+        var effect = Qt.createQmlObject(`
+            import QtQuick 2.0
+            Text {
+                property int type: ${drumType}
+                text: "${text}"
+                font.pixelSize: 24
+                color: type === 0 ? "#ff3333" : "#3333ff"
+                x: hitLine.x + hitLine.width/2 - width/2
+                y: hitLine.y - 50
+                opacity: 1
+
+                Behavior on opacity {
+                    NumberAnimation { duration: 500; to: 0 }
+                }
+
+                Timer {
+                    interval: 500
+                    running: true
+                    onTriggered: parent.destroy()
                 }
             }
         `, gameArea);
-        note.y = gameArea.height;
-        notes.push(note);
-        note.y = drumLeft.y;
-        note.destroy(2000); // Уничтожить после достижения цели
     }
 
-    // Функция проверки попадания по нотам
-    function checkHit(drumIndex) {
-        for (var i = 0; i < notes.length; i++) {
-            var note = notes[i];
-            if (note.targetDrum === drumIndex &&
-                Math.abs(note.y - drumLeft.y) < 30) {
-                // Попадание в ноту!
-                gameArea.score += 300; // Бонус за точное попадание
-                note.destroy();
-                notes.splice(i, 1);
-                break;
-            }
+    function removeNote(note) {
+        var index = activeNotes.indexOf(note);
+        if (index !== -1) {
+            activeNotes.splice(index, 1);
         }
     }
 
-    // Таймер для генерации нот
-    Timer {
-        id: noteSpawner
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: {
-            // Случайным образом выбираем, для какого барабана создать ноту
-            var drumIndex = Math.random() > 0.5 ? 1 : 0;
-            spawnNote(drumIndex);
-        }
-    }
+
 }
