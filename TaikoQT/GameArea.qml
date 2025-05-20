@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtMultimedia
 
 Item {
     id: gameArea
@@ -7,10 +8,35 @@ Item {
     height: 600
     focus: true
 
+    MediaPlayer {
+        id: bgm
+        source: "qrc:/music.mp3"
+        //autoPlay: true
+        audioOutput: AudioOutput {
+            id: audioOut
+            volume: 0.1
+        }
+    }
+
+    SoundEffect {
+        id: hitSoundDon
+        source: "qrc:/don.wav"  // Лучше использовать WAV, MP3 не всегда поддерживается
+        volume: 0.1
+        loops: 1
+    }
+
+    SoundEffect {
+        id: hitSoundKat
+        source: "qrc:/kat.wav"
+        volume: 0.1
+        loops: 1
+    }
+
     Image {
         anchors.fill: parent
         source: "background.jpg"
         fillMode: Image.PreserveAspectCrop
+
     }
 
     property int score: 0
@@ -22,7 +48,7 @@ Item {
     property int hitWindow: 150
     property var drumKeys: ({})
 
-    // Линия ударов (теперь слева)
+    // Линия нот
     Rectangle {
         id: hitLine
         width: 100
@@ -35,7 +61,7 @@ Item {
         y: parent.height/2 - height/2
     }
 
-    // UI элементы
+    // UI
     Text {
         id: scoreText
         anchors.top: parent.top
@@ -56,13 +82,13 @@ Item {
         style: Text.Outline; styleColor: "black"
     }
 
-    // Барабаны (визуальные)
+    // Барабаны
     Row {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 50
 
-        // Красный барабан (Don) - F/J
+        // (Don) - F/J
         Rectangle {
             width: 120
             height: 120
@@ -79,7 +105,7 @@ Item {
             }
         }
 
-        // Синий барабан (Kat) - D/K
+        // (Kat) - D/K
         Rectangle {
             width: 120
             height: 120
@@ -116,8 +142,9 @@ Item {
         onTriggered: spawnNote(Math.floor(Math.random() * 2))
     }
 
-    // Функция создания ноты (переработана для движения справа налево)
+    // создание ноты
     function spawnNote(drumType) {
+        bgm.play();
         var note = Qt.createQmlObject(`
             import QtQuick 2.0
             Rectangle {
@@ -171,9 +198,13 @@ Item {
         if (drumType !== -1) {
             checkNoteHit(drumType);
         }
+
+        if (drumType === 0) hitSoundDon.play();
+        else hitSoundKat.play();
+
     }
 
-    // Проверка попадания по ноте (адаптировано для левой позиции)
+    // проверка попадания по ноте
     function checkNoteHit(drumType) {
         var bestNote = null;
         var bestDiff = hitWindow;
@@ -220,7 +251,7 @@ Item {
         }
     }
 
-    // Создание эффекта попадания (адаптировано для левой позиции)
+    //эффект попадания
     function createHitEffect(text, drumType) {
         var effect = Qt.createQmlObject(`
             import QtQuick 2.0
@@ -252,6 +283,5 @@ Item {
             activeNotes.splice(index, 1);
         }
     }
-
 
 }
