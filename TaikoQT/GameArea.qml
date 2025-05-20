@@ -11,44 +11,42 @@ Item {
     MediaPlayer {
         id: bgm
         source: "qrc:/music.mp3"
-        //autoPlay: true
         audioOutput: AudioOutput {
             id: audioOut
-            volume: 0.1
+            volume: 0.5
         }
     }
 
     SoundEffect {
         id: hitSoundDon
-        source: "qrc:/don.wav"  // Лучше использовать WAV, MP3 не всегда поддерживается
-        volume: 0.1
-        loops: 1
+        source: "qrc:/don.wav"
+        volume: 1.0
     }
 
     SoundEffect {
         id: hitSoundKat
         source: "qrc:/kat.wav"
-        volume: 0.1
-        loops: 1
+        volume: 1.0
     }
 
     Image {
         anchors.fill: parent
         source: "background.jpg"
         fillMode: Image.PreserveAspectCrop
-
     }
 
     property int score: 0
-    property var activeNotes: []
     property int combo: 0
     property int maxCombo: 0
-    property real noteSpeed: 0.3
-    property int spawnInterval: 1000
-    property int hitWindow: 150
+    property var activeNotes: []
     property var drumKeys: ({})
+    property real noteSpeed: 0.3
+    property int hitWindow: 150
 
-    // Линия нот
+    property var noteData: []
+    property int noteIndex: 0
+
+    // Линия попадания
     Rectangle {
         id: hitLine
         width: 100
@@ -57,38 +55,37 @@ Item {
         color: "#333"
         border.color: "white"
         border.width: 3
-        x: parent.width * 0.2 - width/2  // Перемещено влево
-        y: parent.height/2 - height/2
+        x: parent.width * 0.2 - width / 2
+        y: parent.height / 2 - height / 2
     }
 
     // UI
     Text {
-        id: scoreText
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         text: "Score: " + score
         font.pixelSize: 36
         color: "white"
-        style: Text.Outline; styleColor: "black"
+        style: Text.Outline
+        styleColor: "black"
     }
 
     Text {
-        id: comboText
-        anchors.top: scoreText.bottom
+        anchors.top: prev.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         text: "Combo: " + combo + " (Max: " + maxCombo + ")"
         font.pixelSize: 24
         color: "white"
-        style: Text.Outline; styleColor: "black"
+        style: Text.Outline
+        styleColor: "black"
+        id: prev
     }
 
-    // Барабаны
     Row {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 50
 
-        // (Don) - F/J
         Rectangle {
             width: 120
             height: 120
@@ -99,13 +96,12 @@ Item {
 
             Text {
                 anchors.centerIn: parent
-                text: "F/J"
+                text: "F / J"
                 font.pixelSize: 24
                 color: "white"
             }
         }
 
-        // (Kat) - D/K
         Rectangle {
             width: 120
             height: 120
@@ -116,14 +112,25 @@ Item {
 
             Text {
                 anchors.centerIn: parent
-                text: "D/K"
+                text: "D / K"
                 font.pixelSize: 24
                 color: "white"
             }
         }
     }
 
-    // Обработка клавиатуры
+    Timer {
+        id: syncTimer
+        interval: 10
+        repeat: true
+        running: false
+        onTriggered: checkNoteSpawn()
+    }
+
+    Component.onCompleted: {
+        loadNotes()
+    }
+
     Keys.onPressed: {
         drumKeys[event.key] = true;
         handleKeyPress(event.key);
@@ -133,18 +140,33 @@ Item {
         drumKeys[event.key] = false;
     }
 
-    // Генератор нот
-    Timer {
-        id: noteGenerator
-        interval: spawnInterval
-        running: true
-        repeat: true
-        onTriggered: spawnNote(Math.floor(Math.random() * 2))
+    function loadNotes() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "qrc:/notes.json");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                noteData = JSON.parse(xhr.responseText);
+                noteIndex = 0;
+                bgm.play();
+                syncTimer.start();
+            }
+        }
+        xhr.send();
     }
 
-    // создание ноты
+    function checkNoteSpawn() {
+        if (!noteData || noteIndex >= noteData.length)
+            return;
+
+        var currentTime = bgm.position;
+
+        while (noteIndex < noteData.length && noteData[noteIndex].time <= currentTime) {
+            spawnNote(noteData[noteIndex].type);
+            noteIndex++;
+        }
+    }
+
     function spawnNote(drumType) {
-        bgm.play();
         var note = Qt.createQmlObject(`
             import QtQuick 2.0
             Rectangle {
@@ -154,16 +176,15 @@ Item {
                 height: 60
                 radius: 30
                 color: type === 0 ? "#ff3333" : "#3333ff"
-                x: gameArea.width  // Начинаем справа
-                y: hitLine.y + hitLine.height/2 - height/2
+                x: gameArea.width
+                y: ${hitLine.y + hitLine.height / 2 - 30}
 
                 Timer {
-                    id: moveTimer
                     interval: 16
                     running: true
                     repeat: true
                     onTriggered: {
-                        parent.x -= noteSpeed * 15; // Движемся влево
+                        parent.x -= ${noteSpeed * 15};
                         parent.progress = parent.x / gameArea.width;
                         if (parent.x + parent.width < 0) {
                             parent.destroy();
@@ -171,7 +192,7 @@ Item {
                     }
                 }
             }
-        `, gameArea, "Note");
+        `, gameArea);
 
         note.progressChanged.connect(function() {
             if (note.x + note.width < 0) {
@@ -184,27 +205,22 @@ Item {
         activeNotes.push(note);
     }
 
-    // Обработка нажатия клавиш
     function handleKeyPress(key) {
         var drumType = -1;
 
         if (key === Qt.Key_F || key === Qt.Key_J) {
-            drumType = 0; // Don (красный)
-        }
-        else if (key === Qt.Key_D || key === Qt.Key_K) {
-            drumType = 1; // Kat (синий)
+            drumType = 0;
+            hitSoundDon.play();
+        } else if (key === Qt.Key_D || key === Qt.Key_K) {
+            drumType = 1;
+            hitSoundKat.play();
         }
 
         if (drumType !== -1) {
             checkNoteHit(drumType);
         }
-
-        if (drumType === 0) hitSoundDon.play();
-        else hitSoundKat.play();
-
     }
 
-    // проверка попадания по ноте
     function checkNoteHit(drumType) {
         var bestNote = null;
         var bestDiff = hitWindow;
@@ -213,9 +229,8 @@ Item {
             var note = activeNotes[i];
             if (note.type !== drumType) continue;
 
-            // Позиция центра ноты и центра hitLine
-            var noteCenter = note.x + note.width/2;
-            var hitCenter = hitLine.x + hitLine.width/2;
+            var noteCenter = note.x + note.width / 2;
+            var hitCenter = hitLine.x + hitLine.width / 2;
             var diff = Math.abs(noteCenter - hitCenter);
 
             if (diff < bestDiff) {
@@ -225,8 +240,8 @@ Item {
         }
 
         if (bestNote) {
-            var accuracy = "";
             var scoreAdd = 0;
+            var accuracy = "";
 
             if (bestDiff < 30) {
                 scoreAdd = 300;
@@ -251,7 +266,6 @@ Item {
         }
     }
 
-    //эффект попадания
     function createHitEffect(text, drumType) {
         var effect = Qt.createQmlObject(`
             import QtQuick 2.0
@@ -260,8 +274,8 @@ Item {
                 text: "${text}"
                 font.pixelSize: 24
                 color: type === 0 ? "#ff3333" : "#3333ff"
-                x: hitLine.x + hitLine.width/2 - width/2
-                y: hitLine.y - 50
+                x: ${hitLine.x + hitLine.width / 2 - 40}
+                y: ${hitLine.y - 50}
                 opacity: 1
 
                 Behavior on opacity {
@@ -283,5 +297,4 @@ Item {
             activeNotes.splice(index, 1);
         }
     }
-
 }

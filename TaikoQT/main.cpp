@@ -8,7 +8,7 @@
 
 QVariantList loadChart()
 {
-    QFile file(":/chart.json");
+    QFile file(":/notes.json");
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning("Couldn't open chart.json");
         return {};
@@ -32,6 +32,7 @@ QVariantList loadChart()
 
 int main(int argc, char *argv[])
 {
+    qputenv("QML_XHR_ALLOW_FILE_READ", QByteArray("1"));
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
@@ -41,6 +42,5 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
-
     return app.exec();
 }
