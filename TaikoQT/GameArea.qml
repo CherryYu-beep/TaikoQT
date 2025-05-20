@@ -2,12 +2,99 @@ import QtQuick
 import QtQuick.Controls
 import QtMultimedia
 
+
+
 Item {
     id: gameArea
     width: 800
     height: 600
     focus: true
 
+
+    property int score: 0
+    property int combo: 0
+    property int maxCombo: 0
+    property var activeNotes: []
+    property var drumKeys: ({})
+    property real noteSpeed: 0.3
+    property int hitWindow: 150
+    property var noteData: []
+    property int noteIndex: 0
+    property var songList: [
+        { name: "Музыка 1", music: "qrc:/music1.mp3", notes: "qrc:/notes1.json" },
+        { name: "Музыка 2", music: "qrc:/music2.mp3", notes: "qrc:/notes2.json" },
+        { name: "Музыка 3", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json" }
+    ]
+    property int selectedSongIndex: 0
+    property string noteSource: ""
+
+
+    //меню
+    Rectangle {
+        id: startScreen
+        anchors.fill: parent
+        color: "black" // полупрозрачный черный
+        visible: true
+        z: 999
+
+        Column {
+            anchors.centerIn: parent
+            spacing: 40
+
+            Text {
+                text: "Добро пожаловать в Taiko Game!"
+                font.pixelSize: 40
+                color: "white"
+            }
+
+            ComboBox {
+                id: songSelector
+                width: 300
+                model: gameArea.songList
+                textRole: "name"
+                onCurrentIndexChanged: {
+                    gameArea.selectedSongIndex = currentIndex;
+                }
+            }
+
+            Button {
+                text: "Начать игру"
+                width: 200
+                height: 60
+                font.pixelSize: 20
+                onClicked: {
+                    startGame();
+                }
+            }
+
+            Text {
+                text: "Нажмите F/J или D/K в нужный момент, чтобы попадать по нотам."
+                font.pixelSize: 16
+                color: "white"
+                wrapMode: Text.Wrap
+                horizontalAlignment: Text.AlignHCenter
+                width: 400
+            }
+        }
+
+        Keys.onPressed: {
+            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                startGame();
+            }
+        }
+    }
+
+    // отключение главного меню
+    function startGame() {
+        var song = songList[selectedSongIndex];
+        bgm.source = song.music;
+        noteSource = song.notes;
+        startScreen.visible = false;
+        loadNotes();
+    }
+
+
+    // Активация плеера песни карты
     MediaPlayer {
         id: bgm
         source: "qrc:/music.mp3"
@@ -17,34 +104,27 @@ Item {
         }
     }
 
+    //звуковые эффекты
+    // звук дон(синий)
     SoundEffect {
         id: hitSoundDon
         source: "qrc:/don.wav"
         volume: 1.0
     }
 
+    // звук кат(красный)
     SoundEffect {
         id: hitSoundKat
         source: "qrc:/kat.wav"
         volume: 1.0
     }
 
+    // фоновое изображение TODO: воспроизведение видео
     Image {
         anchors.fill: parent
         source: "background.jpg"
         fillMode: Image.PreserveAspectCrop
     }
-
-    property int score: 0
-    property int combo: 0
-    property int maxCombo: 0
-    property var activeNotes: []
-    property var drumKeys: ({})
-    property real noteSpeed: 0.3
-    property int hitWindow: 150
-
-    property var noteData: []
-    property int noteIndex: 0
 
     // Линия попадания
     Rectangle {
@@ -81,6 +161,9 @@ Item {
         id: prev
     }
 
+
+    //бесполезная фигня
+    /*
     Row {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
@@ -117,8 +200,9 @@ Item {
                 color: "white"
             }
         }
-    }
+    }*/
 
+    //таймер
     Timer {
         id: syncTimer
         interval: 10
@@ -127,10 +211,11 @@ Item {
         onTriggered: checkNoteSpawn()
     }
 
-    Component.onCompleted: {
-        loadNotes()
-    }
+    // Component.onCompleted: {
+    //     loadNotes()
+    // }
 
+    //
     Keys.onPressed: {
         drumKeys[event.key] = true;
         handleKeyPress(event.key);
@@ -142,7 +227,7 @@ Item {
 
     function loadNotes() {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "qrc:/notes.json");
+        xhr.open("GET", noteSource);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 noteData = JSON.parse(xhr.responseText);
@@ -166,6 +251,7 @@ Item {
         }
     }
 
+    // создание ноты
     function spawnNote(drumType) {
         var note = Qt.createQmlObject(`
             import QtQuick 2.0
@@ -205,6 +291,7 @@ Item {
         activeNotes.push(note);
     }
 
+    //обработка нажатий
     function handleKeyPress(key) {
         var drumType = -1;
 
@@ -221,6 +308,7 @@ Item {
         }
     }
 
+    //проверка точности нажатий TODO: не по координатам, а по таймингам
     function checkNoteHit(drumType) {
         var bestNote = null;
         var bestDiff = hitWindow;
@@ -266,6 +354,7 @@ Item {
         }
     }
 
+    // текст с показанием точности нажатий TODO: анимация поднятия вверх
     function createHitEffect(text, drumType) {
         var effect = Qt.createQmlObject(`
             import QtQuick 2.0

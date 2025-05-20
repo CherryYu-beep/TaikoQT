@@ -29,7 +29,14 @@ qt_add_resources(TaikoGame "qml"
         music.mp3
         don.wav
         kat.wav
-        notes.json
+
+
+        music1.mp3
+        notes1.json
+        music2.mp3
+        notes2.json
+        music3.mp3
+        notes3.json
 )
 
 target_link_libraries(TaikoGame PRIVATE Qt6::Quick Qt6::Multimedia)
