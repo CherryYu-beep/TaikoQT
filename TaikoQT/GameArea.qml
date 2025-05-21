@@ -27,8 +27,8 @@ Item {
     // Список песен
     property var songList: [
         { name: "Bad Apple", music: "qrc:/music1.mp3", notes: "qrc:/notes1.json" },
-        { name: "Музыка 2", music: "qrc:/music2.mp3", notes: "qrc:/notes2.json" },
-        { name: "Музыка 3", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json" }
+        { name: "Renatus Muzikashii", music: "qrc:/music2.mp3", notes: "qrc:/notes2.json" },
+        { name: "Angel Dream", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json" }
     ]
     property int selectedSongIndex: 0
     property string noteSource: ""
