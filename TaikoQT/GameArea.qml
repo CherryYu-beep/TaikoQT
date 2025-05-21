@@ -18,6 +18,7 @@ Item {
     property int hitWindow: 150
     property var noteData: []
     property int noteIndex: 0
+    property int noteOffset: 2333
 
     // Для подсчёта точности
     property int totalNotes: 0
@@ -230,7 +231,8 @@ Item {
 
     function checkNoteSpawn() {
         if (!noteData || noteIndex >= noteData.length) return
-        var currentTime = bgm.position
+        var currentTime = bgm.position + noteOffset
+
         while (noteIndex < noteData.length && noteData[noteIndex].time <= currentTime) {
             spawnNote(noteData[noteIndex].type)
             noteIndex++
