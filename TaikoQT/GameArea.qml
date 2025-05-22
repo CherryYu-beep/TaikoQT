@@ -298,7 +298,6 @@ Item {
         }
     }
 
-    // СРЕДНЯЯ ОБЛАСТЬ (30%)
     Item {
         id: middleArea
         width: parent.width
@@ -311,14 +310,58 @@ Item {
             fillMode: Image.PreserveAspectCrop
         }
 
+
+
         Rectangle {
             id: hitLine
             width: 100; height: 100; radius: 50
             color: "#333"; border.color: "white"; border.width: 3
-            x: parent.width * 0.2 - width/2
-            y: parent.height/2 - height/2
+            x: parent.width * 0.2 - width / 2
+            y: parent.height / 2 - height / 2
+
+            // Левая подсветка (красная)
+            Rectangle {
+                id: leftFlash
+                radius: 50
+                anchors.verticalCenter: parent.verticalCenter
+                x: 0
+                scale: 0.9
+                width: parent.width
+                height: parent.height
+                color: "#ff0000"
+                opacity: 0.0
+                z: 1
+            }
+
+            // Правая подсветка (синяя)
+            Rectangle {
+                id: rightFlash
+                radius: 50
+                anchors.verticalCenter: parent.verticalCenter
+                x: 0
+                scale: 0.9
+                width: parent.width
+                height: parent.height
+                color: "#0000ff"
+                opacity: 0.0
+                z: 1
+            }
+        }
+
+        // Таймеры для анимации вспышки
+        Timer {
+            id: leftFlashTimer
+            interval: 100; running: false; repeat: false
+            onTriggered: leftFlash.opacity = 0
+        }
+
+        Timer {
+            id: rightFlashTimer
+            interval: 100; running: false; repeat: false
+            onTriggered: rightFlash.opacity = 0
         }
     }
+
 
     // НИЖНЯЯ ОБЛАСТЬ (50%)
     Item {
@@ -371,8 +414,10 @@ Item {
                 property real progress: 0
                 width: 60; height: 60; radius: 30
                 color: type === 0 ? "#ff3333" : "#3333ff"
+                border.color: "white"
+                border.width: 2
                 x: middleArea.width
-                y: ${hitLine.y + hitLine.height/2 - 30}
+                y: ${hitLine.y + hitLine.height / 2 - 30}
 
                 Timer {
                     interval: 16; running: true; repeat: true
@@ -394,8 +439,8 @@ Item {
 
     function handleKeyPress(key) {
         var drumType = -1
-        if (key === Qt.Key_F || key === Qt.Key_J) { drumType = 0; hitSoundDon.play() }
-        else if (key === Qt.Key_D || key === Qt.Key_K) { drumType = 1; hitSoundKat.play() }
+        if (key === Qt.Key_F || key === Qt.Key_J) { drumType = 0; hitSoundDon.play(); leftFlash.opacity = 0.8; leftFlashTimer.restart() }
+        else if (key === Qt.Key_D || key === Qt.Key_K) { drumType = 1; hitSoundKat.play(); rightFlash.opacity = 0.8; rightFlashTimer.restart() }
         if (drumType !== -1) checkNoteHit(drumType)
     }
 
