@@ -38,6 +38,10 @@ qt_add_resources(TaikoGame "qml"
         music3.mp3
         notes3.json
         taiko-bar-right.png
+
+        badapple.jpg
+        renatus.jpg
+        angel.jpg
 )
 
 target_link_libraries(TaikoGame PRIVATE Qt6::Quick Qt6::Multimedia)

@@ -26,10 +26,11 @@ Item {
 
     // Список песен
     property var songList: [
-        { name: "Bad Apple", music: "qrc:/music1.mp3", notes: "qrc:/notes1.json" },
-        { name: "Renatus Muzikashii", music: "qrc:/music2.mp3", notes: "qrc:/notes2.json" },
-        { name: "Angel Dream", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json" }
+        { name: "Bad Apple", music: "qrc:/music1.mp3", notes: "qrc:/notes1.json", image: "qrc:/badapple.jpg" },
+        { name: "Renatus Muzikashii", music: "qrc:/music2.mp3", notes: "qrc:/notes2.json", image: "qrc:/renatus.jpg" },
+        { name: "Angel Dream", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json", image: "qrc:/angel.jpg" }
     ]
+
     property int selectedSongIndex: 0
     property string noteSource: ""
 
@@ -41,17 +42,43 @@ Item {
         visible: true
         z: 999
 
+
         Column {
             anchors.centerIn: parent
-            spacing: 40
+
 
             Text {
-                text: "Добро пожаловать в Taiko Game!"
+                text: "Taiko Game"
                 font.pixelSize: 40
                 color: "white"
+
             }
 
             ListView {
+                Rectangle {
+                    anchors.left: songListView.right
+                    width: 200
+                    height: 200
+                    color: "#222"
+                    border.color: "white"
+                    border.width: 1
+
+                    Image {
+                        anchors.fill: parent
+                        source: gameArea.songList[gameArea.selectedSongIndex].image
+                        fillMode: Image.PreserveAspectCrop
+                        visible: gameArea.songList[gameArea.selectedSongIndex].image !== undefined
+                    }
+
+                    // Текст-заглушка, если нет изображения
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Нет изображения"
+                        color: "white"
+                        visible: gameArea.songList[gameArea.selectedSongIndex].image === undefined
+                    }
+
+                }
                 id: songListView
                 width: 300
                 height: 200
@@ -83,11 +110,11 @@ Item {
 
                 focus: true
                 Keys.onPressed: (event) => {
-                    if (event.key === Qt.Key_Up)
-                        songListView.decrementCurrentIndex();
-                    else if (event.key === Qt.Key_Down)
-                        songListView.incrementCurrentIndex();
-                }
+                                    if (event.key === Qt.Key_Up)
+                                    songListView.decrementCurrentIndex();
+                                    else if (event.key === Qt.Key_Down)
+                                    songListView.incrementCurrentIndex();
+                                }
             }
 
 
@@ -108,6 +135,7 @@ Item {
                 width: 400
             }
         }
+
 
         Keys.onPressed: {
             if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
@@ -233,7 +261,7 @@ Item {
 
     Image {
         anchors.fill: parent
-        source: "background.jpg"
+        source: gameArea.songList[gameArea.selectedSongIndex].image
         fillMode: Image.PreserveAspectCrop
     }
 
@@ -298,6 +326,7 @@ Item {
         width: parent.width
         height: parent.height * 0.5
         anchors.top: middleArea.bottom
+
     }
 
     Timer {
