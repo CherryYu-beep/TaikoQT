@@ -132,7 +132,101 @@ Item {
         id: bgm
         source: "qrc:/music1.mp3"
         audioOutput: AudioOutput { volume: 0.5 }
+
+        onPlaybackStateChanged: {
+            if (playbackState === MediaPlayer.StoppedState) {
+                endGame()
+                console.log("music end")
+            }
+        }
     }
+
+    function getRank() {
+        var acc = accuracyPercent()
+        if (acc >= 95) return "S"
+        else if (acc >= 85) return "A"
+        else if (acc >= 70) return "B"
+        else if (acc >= 50) return "C"
+        else return "D"
+    }
+
+
+    function endGame() {
+        syncTimer.stop()
+        // for (var i = 0; i < activeNotes.length; i++) {
+        //     activeNotes[i].destroy()
+        // }
+        //activeNotes = []
+        resultScreen.visible = true
+    }
+
+    Rectangle {
+        id: resultScreen
+        anchors.fill: parent
+        color: "black"
+        visible: false
+        z: 1000
+
+        Column {
+            anchors.centerIn: parent
+            spacing: 20
+
+            Text {
+                text: "Результаты"
+                font.pixelSize: 40
+                color: "white"
+            }
+
+            Text {
+                text: "Очки: " + score
+                font.pixelSize: 24
+                color: "white"
+            }
+
+            Text {
+                text: "Макс комбо: " + maxCombo
+                font.pixelSize: 24
+                color: "white"
+            }
+
+            Text {
+                text: "Точность: " + accuracyPercent() + "%"
+                font.pixelSize: 24
+                color: "white"
+            }
+
+            Text {
+                text: "Промахи: " + missCount
+                font.pixelSize: 24
+                color: "white"
+            }
+
+            Text {
+                text: "Ранг: " + getRank()
+                font.pixelSize: 36
+                font.bold: true
+                color: {
+                    var rank = getRank()
+                    if (rank === "S") return "#FFD700"   // золото
+                    else if (rank === "A") return "#C0C0C0" // серебро
+                    else if (rank === "B") return "#CD7F32" // бронза
+                    else return "white"
+                }
+            }
+
+
+            Button {
+                text: "Вернуться в меню"
+                width: 200
+                height: 50
+                onClicked: {
+                    resultScreen.visible = false
+                    startScreen.visible = true
+                }
+            }
+        }
+    }
+
 
     SoundEffect { id: hitSoundDon; source: "qrc:/don.wav"; volume: 1.0 }
     SoundEffect { id: hitSoundKat; source: "qrc:/kat.wav"; volume: 1.0 }
