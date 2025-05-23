@@ -28,7 +28,8 @@ Item {
     property var songList: [
         { name: "Bad Apple", music: "qrc:/music1.mp3", notes: "qrc:/notes1.json", image: "qrc:/badapple.jpg" },
         { name: "Renatus Muzikashii", music: "qrc:/music2.mp3", notes: "qrc:/notes2.json", image: "qrc:/renatus.jpg" },
-        { name: "Angel Dream", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json", image: "qrc:/angel.jpg" }
+        { name: "Angel Dream", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json", image: "qrc:/angel.jpg" },
+        { name: "Matryoshka", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json", image: "qrc:/angel.jpg" },
     ]
 
     property int selectedSongIndex: 0
@@ -38,9 +39,198 @@ Item {
     Rectangle {
         id: startScreen
         anchors.fill: parent
-        color: "black"
+        color: "gray"
         visible: true
         z: 999
+
+        Column{
+            spacing: 5
+            //1
+            Row{
+                spacing: 1
+                Rectangle{
+                    border.width: 1
+                    border.color: "black"
+                    width: 50
+                    height: 50
+                    color: white
+                    Text{
+                        anchors.centerIn: parent
+                        text: "#1"
+                        font.pixelSize: 24
+                    }
+                }
+
+                Rectangle {
+                    color: "lightgray"
+                    width: 100
+                    height: 50
+                    // radius: 3
+                    // border.width: 1
+                    // border.color: "black"
+
+
+                    Text {
+                        color: "black"
+                        text: "Player1"
+                        anchors.left: parent.left
+                        anchors.top: parent.top
+                    }
+
+                    Text {
+                        color: "black"
+                        text: "143200"
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+
+                    Text {
+                        color: "black"
+                        text: "98%"
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                    }
+                }
+            }
+            Row{
+                spacing: 1
+                Rectangle{
+                    border.width: 1
+                    border.color: "black"
+                    width: 50
+                    height: 50
+                    color: white
+                    Text{
+                        anchors.centerIn: parent
+                        text: "#2"
+                        font.pixelSize: 24
+                    }
+                }
+
+                Rectangle {
+                    color: "lightgray"
+                    width: 100
+                    height: 50
+                    // radius: 3
+                    // border.width: 1
+                    // border.color: "black"
+
+
+                    Text {
+                        color: "black"
+                        text: "Player2"
+                        anchors.left: parent.left
+                        anchors.top: parent.top
+                    }
+
+                    Text {
+                        color: "black"
+                        text: "132850"
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+
+                    Text {
+                        color: "black"
+                        text: "95%"
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                    }
+                }
+            }
+            Row{
+                spacing: 1
+                Rectangle{
+                    border.width: 1
+                    border.color: "black"
+                    width: 50
+                    height: 50
+                    color: white
+                    Text{
+                        anchors.centerIn: parent
+                        text: "#3"
+                        font.pixelSize: 24
+                    }
+                }
+
+                Rectangle {
+                    color: "lightgray"
+                    width: 100
+                    height: 50
+                    // radius: 3
+                    // border.width: 1
+                    // border.color: "black"
+
+
+                    Text {
+                        color: "black"
+                        text: "Player3"
+                        anchors.left: parent.left
+                        anchors.top: parent.top
+                    }
+
+                    Text {
+                        color: "black"
+                        text: "127400"
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+
+                    Text {
+                        color: "black"
+                        text: "94%"
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                    }
+                }
+            }
+            Row{
+                spacing: 1
+                Rectangle{
+                    border.width: 1
+                    border.color: "black"
+                    width: 50
+                    height: 50
+                    color: white
+                    Text{
+                        anchors.centerIn: parent
+                        text: "#4"
+                        font.pixelSize: 24
+                    }
+                }
+
+                Rectangle {
+                    color: "lightgray"
+                    width: 100
+                    height: 50
+                    // radius: 3
+                    // border.width: 1
+                    // border.color: "black"
+
+
+                    Text {
+                        color: "black"
+                        text: "Player4"
+                        anchors.left: parent.left
+                        anchors.top: parent.top
+                    }
+
+                    Text {
+                        color: "black"
+                        text: "114000"
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+
+                    Text {
+                        color: "black"
+                        text: "91%"
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                    }
+                }
+            }
+        }
 
 
         Column {
@@ -50,7 +240,7 @@ Item {
             Text {
                 text: "Taiko Game"
                 font.pixelSize: 40
-                color: "white"
+                color: "lightgray"
 
             }
 
