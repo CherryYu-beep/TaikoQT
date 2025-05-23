@@ -468,29 +468,39 @@ Item {
     }
 
     function createHitEffect(text, drumType) {
-           var effect = Qt.createQmlObject(`
-               import QtQuick 2.0
-               Text {
-                   property int type: ${drumType}
-                   text: "${text}"
-                   font.pixelSize: 24
-                   color: type === 0 ? "#ff3333" : "#3333ff"
-                   x: ${hitLine.x + hitLine.width / 2 - 40}
-                   y: ${hitLine.y - 50}
-                   opacity: 1
+        var effect = Qt.createQmlObject(`
+                                        import QtQuick 2.0
+                                        Text {
+                                        property int type: ${drumType}
+                                        text: "${text}"
+                                        font.pixelSize: 24
+                                        color: type === 0 ? "#ff3333" : "#3333ff"
+                                        x: ${hitLine.x + hitLine.width / 2 - 40}
+                                        y: ${hitLine.y - 50}
+                                        opacity: 1
+                                        style: Text.Outline
+                                        styleColor: "black"
 
-                   Behavior on opacity {
-                       NumberAnimation { duration: 500; to: 0 }
-                   }
+                                        Behavior on opacity {
+                                        NumberAnimation { duration: 500; to: 0 }
+                                        }
 
-                   Timer {
-                       interval: 500
-                       running: true
-                       onTriggered: parent.destroy()
-                   }
-               }
-           `, middleArea);
-       }
+                                        NumberAnimation on y {
+                                                    from: ${hitLine.y - 50}
+                                                    to: ${hitLine.y - 75}
+                                                    duration: 500
+                                                    easing.type: Easing.OutCubic
+                                                    running: true
+                                                }
+
+                                        Timer {
+                                        interval: 500
+                                        running: true
+                                        onTriggered: parent.destroy()
+                                        }
+                                        }
+                                        `, middleArea);
+    }
 
     function removeNote(note) {
         var idx = activeNotes.indexOf(note)
