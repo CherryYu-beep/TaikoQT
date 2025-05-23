@@ -19,8 +19,8 @@ Item {
     property var noteData: []
     property int noteIndex: 0
     property int noteOffset: 2333
-
-    // Для подсчёта точности
+    property int selectedSongIndex: 0
+    property string noteSource: ""
     property int totalNotes: 0
     property int missCount: 0
 
@@ -32,8 +32,7 @@ Item {
         { name: "Matryoshka", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json", image: "qrc:/angel.jpg" },
     ]
 
-    property int selectedSongIndex: 0
-    property string noteSource: ""
+
 
     // Главное меню
     Rectangle {
@@ -99,7 +98,7 @@ Item {
                     border.color: "black"
                     width: 50
                     height: 50
-                    color: white
+                    color: "white"
                     Text{
                         anchors.centerIn: parent
                         text: "#2"
@@ -145,7 +144,7 @@ Item {
                     border.color: "black"
                     width: 50
                     height: 50
-                    color: white
+                    color: "white"
                     Text{
                         anchors.centerIn: parent
                         text: "#3"
@@ -191,7 +190,7 @@ Item {
                     border.color: "black"
                     width: 50
                     height: 50
-                    color: white
+                    color: "white"
                     Text{
                         anchors.centerIn: parent
                         text: "#4"
@@ -455,36 +454,50 @@ Item {
         fillMode: Image.PreserveAspectCrop
     }
 
-    // ВЕРХНЯЯ ОБЛАСТЬ (20%)
     Item {
         id: topArea
         width: parent.width
         height: parent.height * 0.2
 
-        Column {
-            anchors.centerIn: parent
-            spacing: 10
+        // Image {
+        //     id: paralaxTop
+        //     source: "taiko-Slider.png"
+        // }
 
-            Text {
-                text: "Score: " + score
-                font.pixelSize: 30
-                color: "white"
-                style: Text.Outline; styleColor: "black"
-            }
+        // Слева сверху
+        Text {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.margins: 10
+            text: "Score: " + score
+            font.pixelSize: 30
+            color: "white"
+            style: Text.Outline
+            styleColor: "black"
+        }
 
-            Text {
-                text: "Combo: " + combo + " (Max: " + maxCombo + ")"
-                font.pixelSize: 20
-                color: "white"
-                style: Text.Outline; styleColor: "black"
-            }
+        // По центру сверху
+        Text {
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 10
+            text: "Combo: " + combo + " (Max: " + maxCombo + ")"
+            font.pixelSize: 20
+            color: "white"
+            style: Text.Outline
+            styleColor: "black"
+        }
 
-            Text {
-                text: "Accuracy: " + accuracyPercent() + "%"
-                font.pixelSize: 20
-                color: "white"
-                style: Text.Outline; styleColor: "black"
-            }
+        // Слева снизу
+        Text {
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            anchors.margins: 10
+            text: "Accuracy: " + accuracyPercent() + "%"
+            font.pixelSize: 20
+            color: "white"
+            style: Text.Outline
+            styleColor: "black"
         }
     }
 
@@ -614,11 +627,12 @@ Item {
                     onTriggered: {
                         parent.x -= ${noteSpeed * 15}
                         parent.progress = parent.x / middleArea.width
-                        if (parent.x + parent.width < 0) {
-                            parent.destroy()
-                            missCount++
-                            removeNote(note)
+                        if (parent.x + parent.width < 100) {
+                            createHitEffect("MISS!", 0)
                             combo = 0
+                            missCount++
+                            parent.destroy()
+                            removeNote(note)
                         }
                     }
                 }
@@ -693,7 +707,11 @@ Item {
     }
 
     function removeNote(note) {
-        var idx = activeNotes.indexOf(note)
-        if (idx !== -1) activeNotes.splice(idx, 1)
+        var index = activeNotes.indexOf(note)
+        if (index !== -1) {
+            activeNotes.splice(index, 1)
+        }
     }
+
+
 }

@@ -38,7 +38,8 @@ qt_add_resources(TaikoGame "qml"
         music3.mp3
         notes3.json
         taiko-bar-right.png
-
+        taiko-Slider-fail.png
+        taiko-Slider.png
         badapple.jpg
         renatus.jpg
         angel.jpg
