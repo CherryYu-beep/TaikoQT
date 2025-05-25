@@ -229,6 +229,8 @@ Item {
                     }
                 }
             }
+
+
         }
 
 
@@ -459,10 +461,18 @@ Item {
         width: parent.width
         height: parent.height * 0.2
 
-        // Image {
-        //     id: paralaxTop
-        //     source: "taiko-Slider.png"
-        // }
+        Row{
+            Image {
+                id: paralaxTop
+                source: "taiko-Slider.png"
+                z: 1
+            }
+            Image {
+                id: paralaxTop1
+                source: "taiko-Slider.png"
+                z: 1
+            }
+        }
 
         // Слева сверху
         Text {
@@ -629,6 +639,7 @@ Item {
                         parent.progress = parent.x / middleArea.width
                         if (parent.x + parent.width < 100) {
                             createHitEffect("MISS!", 0)
+                            paralaxMiss()
                             combo = 0
                             missCount++
                             parent.destroy()
@@ -639,6 +650,16 @@ Item {
             }
         `, middleArea)
         activeNotes.push(note)
+    }
+
+    function paralaxMiss(){
+        paralaxTop.source = "taiko-Slider-fail.png"
+        paralaxTop1.source = "taiko-Slider-fail.png"
+    }
+
+    function paralaxHit(){
+        paralaxTop.source = "taiko-Slider.png"
+        paralaxTop1.source = "taiko-Slider.png"
     }
 
     function handleKeyPress(key) {
@@ -661,6 +682,7 @@ Item {
             score += scoreAdd
             combo++
             if (combo > maxCombo) maxCombo = combo
+            paralaxHit()
             createHitEffect(bestDiff < 30 ? "PERFECT!" : (bestDiff < 60 ? "GOOD!" : "OK!"), drumType)
             bestNote.destroy()
             removeNote(bestNote)
