@@ -41,209 +41,85 @@ Item {
         color: "gray"
         visible: true
         z: 999
+        opacity: 0.95
 
         Column{
             spacing: 5
-            //1
-            Row{
-                spacing: 1
-                Rectangle{
-                    border.width: 1
-                    border.color: "black"
-                    width: 50
-                    height: 50
-                    color: white
-                    Text{
-                        anchors.centerIn: parent
-                        text: "#1"
-                        font.pixelSize: 24
-                    }
-                }
+            // Таблица лидеров - УЛУЧШЕННАЯ ВЕРСИЯ
+            Rectangle {
+                width: 250 // Ширина контейнера таблицы
+                height: startScreen.height // Высота контейнера таблицы
+                color: "#222222CC" // Темный полупрозрачный фон
+                radius: 10 // Скругленные углы
+                border.width: 2
+                border.color: "#FFFFFF" // Белая рамка
+                clip: true // Обрезаем содержимое по радиусу
 
-                Rectangle {
-                    color: "lightgray"
-                    width: 100
-                    height: 50
-                    // radius: 3
-                    // border.width: 1
-                    // border.color: "black"
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 15 // Отступы внутри контейнера
+                    spacing: 10 // Расстояние между элементами столбца
 
-
+                    // Заголовок таблицы лидеров
                     Text {
-                        color: "black"
-                        text: "Player1"
-                        anchors.left: parent.left
-                        anchors.top: parent.top
+                        text: "Таблица лидеров"
+                        font.pixelSize: 28
+                        font.bold: true
+                        color: "#FFD700" // Золотой цвет для заголовка
+                        horizontalAlignment: Text.AlignHCenter // Центрирование текста
+                        width: parent.width // Растягиваем на всю ширину родителя
                     }
 
-                    Text {
-                        color: "black"
-                        text: "143200"
-                        anchors.right: parent.right
-                        anchors.top: parent.top
+                    // Разделитель под заголовком
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: "#FFFFFF"
                     }
 
-                    Text {
-                        color: "black"
-                        text: "98%"
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                    }
-                }
-            }
-            Row{
-                spacing: 1
-                Rectangle{
-                    border.width: 1
-                    border.color: "black"
-                    width: 50
-                    height: 50
-                    color: "white"
-                    Text{
-                        anchors.centerIn: parent
-                        text: "#2"
-                        font.pixelSize: 24
-                    }
-                }
-
-                Rectangle {
-                    color: "lightgray"
-                    width: 100
-                    height: 50
-                    // radius: 3
-                    // border.width: 1
-                    // border.color: "black"
-
-
-                    Text {
-                        color: "black"
-                        text: "Player2"
-                        anchors.left: parent.left
-                        anchors.top: parent.top
+                    // Заголовки столбцов
+                    Row {
+                        width: parent.width
+                        spacing: 5 // Расстояние между колонками
+                        Text { text: "#"; font.pixelSize: 16; color: "white"; width: 30; horizontalAlignment: Text.AlignHCenter }
+                        Text { text: "Игрок"; font.pixelSize: 16; color: "white"; width: 80 }
+                        Text { text: "Очки"; font.pixelSize: 16; color: "white"; width: 60; horizontalAlignment: Text.AlignRight }
+                        Text { text: "%"; font.pixelSize: 16; color: "white"; width: 40; horizontalAlignment: Text.AlignRight }
                     }
 
-                    Text {
-                        color: "black"
-                        text: "132850"
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                    }
-
-                    Text {
-                        color: "black"
-                        text: "95%"
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
+                    // Динамическое отображение игроков с использованием Repeater
+                    // Здесь можно использовать реальные данные, загруженные из файла или базы данных
+                    Repeater {
+                        model: [
+                            { rank: 1, name: "Player1", score: 143200, accuracy: 98 },
+                            { rank: 2, name: "Player2", score: 132850, accuracy: 95 },
+                            { rank: 3, name: "Player3", score: 127400, accuracy: 94 },
+                            { rank: 4, name: "Player4", score: 114000, accuracy: 91 },
+                            { rank: 5, name: "Player5", score: 105000, accuracy: 88 },
+                            { rank: 6, name: "Player6", score: 99000, accuracy: 85 },
+                            { rank: 7, name: "Player7", score: 92000, accuracy: 82 },
+                            { rank: 8, name: "Player8", score: 85000, accuracy: 79 },
+                        ]
+                        delegate: Row {
+                            width: parent.width
+                            spacing: 5
+                            height: 25 // Высота каждой строки игрока
+                            Text { text: modelData.rank; font.pixelSize: 16; color: "white"; width: 30; horizontalAlignment: Text.AlignHCenter }
+                            Text { text: modelData.name; font.pixelSize: 16; color: "white"; width: 80 }
+                            Text { text: modelData.score; font.pixelSize: 16; color: "white"; width: 60; horizontalAlignment: Text.AlignRight }
+                            Text { text: modelData.accuracy + "%"; font.pixelSize: 16; color: "white"; width: 40; horizontalAlignment: Text.AlignRight }
+                        }
                     }
                 }
             }
-            Row{
-                spacing: 1
-                Rectangle{
-                    border.width: 1
-                    border.color: "black"
-                    width: 50
-                    height: 50
-                    color: "white"
-                    Text{
-                        anchors.centerIn: parent
-                        text: "#3"
-                        font.pixelSize: 24
-                    }
-                }
-
-                Rectangle {
-                    color: "lightgray"
-                    width: 100
-                    height: 50
-                    // radius: 3
-                    // border.width: 1
-                    // border.color: "black"
-
-
-                    Text {
-                        color: "black"
-                        text: "Player3"
-                        anchors.left: parent.left
-                        anchors.top: parent.top
-                    }
-
-                    Text {
-                        color: "black"
-                        text: "127400"
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                    }
-
-                    Text {
-                        color: "black"
-                        text: "94%"
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                    }
-                }
-            }
-            Row{
-                spacing: 1
-                Rectangle{
-                    border.width: 1
-                    border.color: "black"
-                    width: 50
-                    height: 50
-                    color: "white"
-                    Text{
-                        anchors.centerIn: parent
-                        text: "#4"
-                        font.pixelSize: 24
-                    }
-                }
-
-                Rectangle {
-                    color: "lightgray"
-                    width: 100
-                    height: 50
-                    // radius: 3
-                    // border.width: 1
-                    // border.color: "black"
-
-
-                    Text {
-                        color: "black"
-                        text: "Player4"
-                        anchors.left: parent.left
-                        anchors.top: parent.top
-                    }
-
-                    Text {
-                        color: "black"
-                        text: "114000"
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                    }
-
-                    Text {
-                        color: "black"
-                        text: "91%"
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                    }
-                }
-            }
-
-
         }
+
 
 
         Column {
             anchors.centerIn: parent
 
 
-            Text {
-                text: "Taiko Game"
-                font.pixelSize: 40
-                color: "lightgray"
-
-            }
 
             ListView {
                 Rectangle {
@@ -310,20 +186,12 @@ Item {
 
 
             Button {
+                anchors.horizontalCenter: parent.horizontalCenter
                 text: "Начать игру"
                 width: 200
                 height: 60
                 font.pixelSize: 20
                 onClicked: startGame()
-            }
-
-            Text {
-                text: "Нажмите F/J или D/K в нужный момент, чтобы попадать по нотам."
-                font.pixelSize: 16
-                color: "white"
-                wrapMode: Text.Wrap
-                horizontalAlignment: Text.AlignHCenter
-                width: 400
             }
         }
 
