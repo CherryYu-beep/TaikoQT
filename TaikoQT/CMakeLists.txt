@@ -16,6 +16,7 @@ qt_add_executable(TaikoGame
     main.cpp
 )
 
+
 # Добавляем QML файлы как ресурсы
 qt_add_resources(TaikoGame "qml"
     PREFIX "/"

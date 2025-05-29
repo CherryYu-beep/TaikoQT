@@ -1,21 +1,29 @@
 [
+  "Name": "Angel Dream"
+  "ApproachRate": 5
+  "OverallDifficulty": 4
   {
-    "time": 1333,
+	"hitSound": 1,
+    "time": 3333,
     "type": 0
   },
   {
-    "time": 1767,
+	"hitSound": 1,
+    "time": 3767,
     "type": 0
   },
   {
-    "time": 2202,
+	"hitSound": 1,
+    "time": 4202,
     "type": 0
   },
   {
-    "time": 2637,
+	"hitSound": 2,
+    "time": 4637,
     "type": 0
   },
   {
+	"hitSound": 1
     "time": 2746,
     "type": 0
   },
