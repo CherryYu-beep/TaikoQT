@@ -43,7 +43,7 @@ Item {
 
         Column {
             spacing: 5
-            // Таблица лидеров - УЛУЧШЕННАЯ ВЕРСИЯ
+            // Таблица лидеров
             Rectangle {
                 width: 250
                 height: startScreen.height
@@ -442,7 +442,7 @@ Item {
                     width: ${noteWidth}
                     height: 60
                     radius: 60
-                    opacity: 0.5
+                    opacity: 0.9
                     color: "#FFAA00" // Yellow for drumroll
                     border.color: "white"
                     border.width: 2
