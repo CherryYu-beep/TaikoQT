@@ -6,8 +6,9 @@
   },
 
   {
-    "time": 4487,
-    "type": 0
+    "time": 5487,
+    "type": 3,
+	"duration": 10000
   },
   {
     "time": 5821,

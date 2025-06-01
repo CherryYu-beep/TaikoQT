@@ -8,7 +8,7 @@ Item {
     height: 600
     focus: true
 
-    // Игровые параметры
+    // Game parameters
     property int score: 0
     property int combo: 0
     property int maxCombo: 0
@@ -24,7 +24,7 @@ Item {
     property int totalNotes: 0
     property int missCount: 0
 
-    // Список песен
+    // Song list
     property var songList: [
         { name: "Bad Apple", music: "qrc:/music1.mp3", notes: "qrc:/notes1.json", image: "qrc:/badapple.jpg" },
         { name: "Renatus Muzikashii", music: "qrc:/music2.mp3", notes: "qrc:/notes2.json", image: "qrc:/renatus.jpg" },
@@ -32,7 +32,7 @@ Item {
         { name: "Matryoshka", music: "qrc:/music3.mp3", notes: "qrc:/notes3.json", image: "qrc:/angel.jpg" }
     ]
 
-    // Главное меню
+    // Main menu (unchanged)
     Rectangle {
         id: startScreen
         anchors.fill: parent
@@ -43,7 +43,6 @@ Item {
 
         Column {
             spacing: 5
-            // Таблица лидеров
             Rectangle {
                 width: 250
                 height: startScreen.height
@@ -274,6 +273,7 @@ Item {
 
     SoundEffect { id: hitSoundDon; source: "qrc:/don.wav"; volume: 1.0 }
     SoundEffect { id: hitSoundKat; source: "qrc:/kat.wav"; volume: 1.0 }
+    SoundEffect { id: spinnerSound; source: "qrc:/spinner.wav"; volume: 1.0 }
 
     Image {
         anchors.fill: parent
@@ -429,8 +429,7 @@ Item {
         var note
         if (drumType === 2) {
             // Drumroll note
-            console.log("drumroll")
-            var noteWidth = Math.max(100, duration * noteSpeed) // Calculate width based on duration
+            var noteWidth = Math.max(100, duration * noteSpeed)
             note = Qt.createQmlObject(`
                 import QtQuick 2.0
                 Rectangle {
@@ -443,7 +442,7 @@ Item {
                     height: 60
                     radius: 60
                     opacity: 0.9
-                    color: "#FFAA00" // Yellow for drumroll
+                    color: "#FFAA00"
                     border.color: "white"
                     border.width: 2
                     x: middleArea.width
@@ -469,6 +468,88 @@ Item {
                                 parent.destroy()
                                 removeNote(parent)
                             }
+                        }
+                    }
+                }
+            `, middleArea)
+        } else if (drumType === 3) {
+            // Spinner note
+            note = Qt.createQmlObject(`
+                import QtQuick 2.0
+                Item {
+                    property int type: 3
+                    property real progress: 0
+                    property int hitCount: 0
+                    property int minHits: Math.max(5, Math.floor(${duration} / 200))
+                    property int duration: ${duration}
+                    width: 120
+                    height: 120
+                    x: ${hitLine.x + hitLine.width / 2 - 60}
+                    y: ${hitLine.y + hitLine.height / 2 - 60}
+
+                    // Background circle
+                    Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        radius: 60
+                        color: "transparent"
+                        border.color: "white"
+                        border.width: 4
+                    }
+
+                    // Filling arc
+                    Canvas {
+                        id: spinnerCanvas
+                        width: parent.width
+                        height: parent.height
+                        onPaint: {
+                            var ctx = getContext("2d")
+                            ctx.clearRect(0, 0, width, height)
+                            ctx.beginPath()
+                            ctx.arc(width / 2, height / 2, 50, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * parent.progress)
+                            ctx.lineWidth = 8
+                            ctx.strokeStyle = "#00FFFF"
+                            ctx.stroke()
+                        }
+                    }
+
+                    // Rotation animation
+                    transform: Rotation {
+                        id: spinnerRotation
+                        origin.x: 60
+                        origin.y: 60
+                        angle: 0
+                    }
+
+                    NumberAnimation {
+                        target: spinnerRotation
+                        property: "angle"
+                        from: 0
+                        to: 360
+                        duration: 1000
+                        loops: Animation.Infinite
+                        running: true
+                    }
+
+                    Timer {
+                        interval: ${duration}
+                        running: true
+                        repeat: false
+                        onTriggered: {
+                            if (parent.hitCount < parent.minHits) {
+                                createHitEffect("MISS!", 0)
+                                paralaxMiss()
+                                combo = 0
+                                missCount++
+                            } else {
+                                createHitEffect("SPINNER CLEARED!", 3)
+                                score += parent.hitCount * 100
+                                combo++
+                                if (combo > maxCombo) maxCombo = combo
+                                paralaxHit()
+                            }
+                            parent.destroy()
+                            removeNote(parent)
                         }
                     }
                 }
@@ -549,12 +630,19 @@ Item {
                 var hitCenter = hitLine.x + hitLine.width / 2
                 if (note.x <= hitLine.x + hitLine.width && note.x + note.width >= hitLine.x) {
                     note.hitCount++
-                    score += 100 // Add points per hit
+                    score += 100
                     combo++
                     createHitEffect("HIT!", 2)
                     paralaxHit()
                     continue
                 }
+            } else if (note.type === 3) {
+                // Handle spinner note
+                note.hitCount++
+                spinnerSound.play()
+                note.progress = Math.min(1.0, note.hitCount / note.minHits)
+                note.children[1].requestPaint()
+                continue
             } else if (note.type === drumType) {
                 // Handle regular note
                 var diff = Math.abs((note.x + note.width / 2) - (hitLine.x + hitLine.width / 2))
@@ -576,13 +664,18 @@ Item {
         } else if (!bestNote && drumType !== -1) {
             // No valid regular note hit, check if it breaks combo
             var drumrollHit = false
+            var spinnerHit = false
             for (var i = 0; i < activeNotes.length; i++) {
                 if (activeNotes[i].type === 2 && activeNotes[i].x <= hitLine.x + hitLine.width && activeNotes[i].x + activeNotes[i].width >= hitLine.x) {
                     drumrollHit = true
                     break
                 }
+                if (activeNotes[i].type === 3) {
+                    spinnerHit = true
+                    break
+                }
             }
-            if (!drumrollHit) combo = 0
+            if (!drumrollHit && !spinnerHit) combo = 0
         }
     }
 
@@ -591,7 +684,7 @@ Item {
     }
 
     function createHitEffect(text, drumType) {
-        var color = drumType === 0 ? "#ff3333" : (drumType === 1 ? "#3333ff" : "#FFFF00")
+        var color = drumType === 0 ? "#ff3333" : (drumType === 1 ? "#3333ff" : (drumType === 3 ? "#00FFFF" : "#FFFF00"))
         var effect = Qt.createQmlObject(`
             import QtQuick 2.0
             Text {
